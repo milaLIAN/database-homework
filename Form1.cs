@@ -33,7 +33,7 @@ namespace BookManagement
 
             int userTypeCode = userType.Equals("管理员") ? 1 : 2;
 
-            string connectionString = "server=localhost;database=BookManage;uid=root;pwd=ig2neaLk&d;";
+            string connectionString = "server=localhost;database=BookManage;uid=root;pwd=1111;";
             string query = $"SELECT * FROM User_Info WHERE UID='{username}' AND UPwd='{password}' AND UState={userTypeCode}";
 
             try
