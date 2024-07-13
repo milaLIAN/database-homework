@@ -21,63 +21,55 @@ namespace BookManagement
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            string username = txtName.Text.Trim();
-            string password = txtPwd.Text.Trim();
-            string userType = cboUserType.Text.Trim();
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (this.txtName.Text != string.Empty && this.txtPwd.Text != string.Empty)
             {
-                MessageBox.Show("用户名或密码不能为空！");
-                return;
-            }
+                string state = this.cboUserType.Text; ;
+                int num;
+                if (state.Equals("管理员"))
+                    num = 1;
+                else
+                    num = 2;
 
-            int userTypeCode = userType.Equals("管理员") ? 1 : 2;
+                string sql = string.Format("select * from User_Info where UID='{0}' and UPwd = '{1}' and UState = {2}", this.txtName.Text.Trim(), this.txtPwd.Text.Trim(), num);
 
-            string connectionString = "server=localhost;database=BookManage;uid=root;pwd=1111;";
-            string query = $"SELECT * FROM User_Info WHERE UID='{username}' AND UPwd='{password}' AND UState={userTypeCode}";
+                MySqlConnection conn = new MySqlConnection("data source=localhost;database=BookManage;user id=root;password=ig2neaLk&d");
+                conn.Open();
 
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                MySqlDataAdapter da = new MySqlDataAdapter(sql, conn);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                conn.Close();
+
+                if (num == 1 && dt.Rows.Count > 0)
                 {
-                    conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-                    MySqlDataReader reader = cmd.ExecuteReader();
+                    MessageBox.Show("登录成功，欢迎进入管理员页面！");
+                    this.Hide();
+                    frmLoginAdmin frmLoginAdmin = new frmLoginAdmin();
+                    frmLoginAdmin.Show();
 
-                    if (reader.HasRows)
-                    {
-                        if (userTypeCode == 1)
-                        {
-                            MessageBox.Show("登录成功，欢迎进入管理员页面！");
-                            Hide();
-                            frmLoginAdmin frmAdmin = new frmLoginAdmin();
-                            frmAdmin.Show();
-                        }
-                        else if (userTypeCode == 2)
-                        {
-                            MessageBox.Show("登录成功，欢迎进入用户页面！");
-                            Hide();
-                            frmLoginUser frmUser = new frmLoginUser();
-                            frmUser.Show();
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("用户名或密码错误！");
-                    }
-
-                    reader.Close();
+                }
+                else if (num == 2 && dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("登录成功，欢迎进入用户页面！");
+                    this.Hide();
+                    frmLoginUser frmLoginUser = new frmLoginUser();
+                    frmLoginUser.Show();
+                }
+                else
+                {
+                    MessageBox.Show("用户名或密码错误！");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"数据库连接或查询出错：{ex.Message}");
+                MessageBox.Show("用户名或密码为空！");
             }
         }
 
         private void btnCancelClick_Click(object sender, EventArgs e)
         {
-            Close();
+            this.Close();
         }
     }
 }
